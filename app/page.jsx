@@ -99,11 +99,12 @@ export default function Home() {
       </div>
       {/* Task Search Bar */}
       <div className="my-5 p-4">
-        <TaskSearchBar />
+        <TaskSearchBar tasks={tasks} />
       </div>
       {/* Task Columns */}
       <div className="my-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         <DndContext
+          id="tasks"
           sensors={sensors}
           onDragEnd={handleDragEnd}
           collisionDetection={closestCorners}
@@ -112,9 +113,21 @@ export default function Home() {
             items={tasks.map((task) => task.id)}
             strategy={verticalListSortingStrategy}
           >
-            <TaskColumn heading="Todo" tasks={getTasksByStatus("todo")} status="todo" />
-            <TaskColumn heading="In Progress" tasks={getTasksByStatus("in-progress")} status="in-progress" />
-            <TaskColumn heading="Done" tasks={getTasksByStatus("done")} status="done" />
+            <TaskColumn
+              heading="Todo"
+              tasks={getTasksByStatus("todo")}
+              status="todo"
+            />
+            <TaskColumn
+              heading="In Progress"
+              tasks={getTasksByStatus("in-progress")}
+              status="in-progress"
+            />
+            <TaskColumn
+              heading="Done"
+              tasks={getTasksByStatus("done")}
+              status="done"
+            />
           </SortableContext>
         </DndContext>
       </div>

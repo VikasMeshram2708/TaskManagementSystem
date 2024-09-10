@@ -12,5 +12,7 @@ export const TaskSchema = z.object({
   status: z
     .string()
     .min(2, { message: "Status must be at least 2 characters long" })
-    .max(50, { message: "Status cannot exceed 50 characters" }),
+    .max(50, { message: "Status cannot exceed 50 characters" })
+    .optional(),
+  uEmail: z.string().email(),
 });

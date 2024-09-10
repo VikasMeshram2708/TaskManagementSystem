@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TaskSchema } from "@/app/models/Task";
 
-export default function CreateTaskModal({ setToggleForm }) {
+export default function CreateTaskModal({ setToggleForm, tasks, setTasks }) {
   const {
     register,
     handleSubmit,
@@ -15,7 +15,15 @@ export default function CreateTaskModal({ setToggleForm }) {
 
   const onSubmit = (data) => {
     console.log("data", data);
-    setToggleForm(false)
+    setToggleForm(false);
+    setTasks({
+      ...tasks,
+      data,
+    });
+    // setTasks((prev) => ({
+    //   ...prev,
+    //   data,
+    // }));
   };
   return (
     <section className="px-4 py-2 rounded border-2 bg-white mt-36 shadow shadow-gray-200 max-w-lg mx-auto">

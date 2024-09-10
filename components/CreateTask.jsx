@@ -3,10 +3,10 @@
 import { useState } from "react";
 import CreateTaskModal from "./CreateTaskModal";
 
-export default function CreateTask() {
+export default function CreateTask({tasks, setTasks}) {
   const [toggleForm, setToggleForm] = useState(false);
   return (
-    <section>
+    <section className="container mx-auto">
       <button
         onClick={() => setToggleForm((prev) => !prev)}
         type="button"
@@ -16,7 +16,7 @@ export default function CreateTask() {
       </button>
       {toggleForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-lg">
-          <CreateTaskModal setToggleForm={setToggleForm} />
+          <CreateTaskModal tasks={tasks} setTasks={setTasks} setToggleForm={setToggleForm} />
         </div>
       )}
     </section>

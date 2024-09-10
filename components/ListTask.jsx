@@ -27,31 +27,53 @@ export default function ListTask({ tasks, setTasks }) {
   ];
 
   // Handle task drop to update its status or position
-  const handleDrop = (draggedTask, newStatus, targetTask) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === draggedTask.id) {
-        // Update the task's status if moved between columns
-        return { ...task, status: newStatus };
+  const handleDrop = async (draggedTask, newStatus, targetTask) => {
+    try {
+      const updatedTasks = await Promise.all(tasks.map(async (task) => {
+        if (task.id === draggedTask.id) {
+          // Update the task's status if moved between columns
+          const res = await fetch('/api/task/update', {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              taskId: task.id,
+              status: newStatus,
+            })
+          });
+  
+          if (!res.ok) {
+            throw new Error('Failed to update task on server');
+          }
+  
+          // Only update local state if the API call was successful
+          return { ...task, status: newStatus };
+        }
+        return task;
+      }));
+  
+      if (targetTask) {
+        const filteredTasks = updatedTasks.filter((task) => task.status === newStatus);
+        const targetIndex = filteredTasks.findIndex((t) => t.id === targetTask.id);
+        const draggedIndex = filteredTasks.findIndex((t) => t.id === draggedTask.id);
+  
+        // Reorder tasks within the same column
+        const [removed] = filteredTasks.splice(draggedIndex, 1);
+        filteredTasks.splice(targetIndex, 0, removed);
+  
+        setTasks(
+          updatedTasks.map((task) =>
+            filteredTasks.find((t) => t.id === task.id) || task
+          )
+        );
+      } else {
+        setTasks(updatedTasks);
       }
-      return task;
-    });
-
-    if (targetTask) {
-      const filteredTasks = updatedTasks.filter((task) => task.status === newStatus);
-      const targetIndex = filteredTasks.findIndex((t) => t.id === targetTask.id);
-      const draggedIndex = filteredTasks.findIndex((t) => t.id === draggedTask.id);
-
-      // Reorder tasks within the same column
-      const [removed] = filteredTasks.splice(draggedIndex, 1);
-      filteredTasks.splice(targetIndex, 0, removed);
-
-      setTasks(
-        updatedTasks.map((task) =>
-          filteredTasks.find((t) => t.id === task.id) || task
-        )
-      );
-    } else {
-      setTasks(updatedTasks);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      // Here you might want to show an error message to the user
+      // and possibly revert the drag operation
     }
   };
 

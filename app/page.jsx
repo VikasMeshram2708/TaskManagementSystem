@@ -35,10 +35,6 @@ export default function Home() {
     );
   }
 
-  // if (isError) {
-  //   return <div>Something went wrong. Failed to fetch tasks.</div>;
-  // }
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="min-h-screen container mx-auto">

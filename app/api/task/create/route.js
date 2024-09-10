@@ -8,6 +8,7 @@ export const POST = async (request) => {
   try {
     // Parse and validate the request body
     const reqBody = await request.json();
+    
     const task = TaskSchema.parse(reqBody);
 
     // Connect to the database

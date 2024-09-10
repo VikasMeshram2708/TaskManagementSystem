@@ -5,31 +5,40 @@ import { DndProvider } from "react-dnd";
 import CreateTask from "@/components/CreateTask";
 import ListTask from "@/components/ListTask";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 export default function Home() {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Task 1",
-      description: "Complete Task 1",
-      status: "todo",
-      createdAt: new Date(),
+  const [tasks, setTasks] = useState([]);
+
+  const { isLoading, isError } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: async () => {
+      const res = await fetch("/api/task/all", {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch tasks");
+      }
+      const result = await res.json();
+      console.log("r", result);
+      setTasks(result?.tasks || []);
+      return result.tasks || [];
     },
-    {
-      id: 2,
-      title: "Task 2",
-      description: "Complete Task 2",
-      status: "todo",
-      createdAt: new Date(),
-    },
-    {
-      id: 3,
-      title: "Task 3",
-      description: "Complete Task 3",
-      status: "todo",
-      createdAt: new Date(),
-    },
-  ]);
+  });
+
+  if (isLoading) {
+    return (
+      <div className="text-center relative aspect-video">
+        <Image src="https://is.gd/RZaewB" alt="loading" layout="fill" />
+      </div>
+    );
+  }
+
+  // if (isError) {
+  //   return <div>Something went wrong. Failed to fetch tasks.</div>;
+  // }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="min-h-screen container mx-auto">

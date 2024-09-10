@@ -7,6 +7,7 @@ import { UserSchema } from "../models/User";
 // import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -42,6 +43,15 @@ export default function SignUpPage() {
     } catch (error) {
       console.log(`Something went wrong. Sign Up failed ${error}`);
       return toast.error("Sign Up Failed");
+    }
+  }
+
+  async function handleGoogleSignUp() {
+    try {
+      await signIn("google"); // Ensure you have Google provider configured in NextAuth
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      toast.error("Google sign-in failed");
     }
   }
   return (
@@ -130,7 +140,8 @@ export default function SignUpPage() {
               Already a user ? <Link href="/login">Login</Link>
             </p>
             <button
-              type="submit"
+              onClick={handleGoogleSignUp}
+              type="button"
               className="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 text-lg font-bold"
             >
               Sign Up with Google

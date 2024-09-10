@@ -8,13 +8,6 @@ const handler = NextAuth({
     signIn: "/login",
     newUser: "/signup",
   },
-  session: {
-    strategy: "jwt",
-    maxAge: 60 * 60, // 1 hour
-  },
-  generateSessionToken: () => {
-    return randomUUID?.() ?? randomBytes(32).toString("hex");
-  },
   secret: process.env.NextAuth_SECRET,
   providers: [
     GoogleProvider({

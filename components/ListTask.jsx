@@ -114,9 +114,13 @@ export default function ListTask({ tasks, setTasks }) {
           {status.label}
         </h2>
         <div className="space-y-4">
-          {status.tasks.map((task) => (
-            <TaskCard key={task.id} task={task} status={status} />
-          ))}
+          {status.tasks.length === 0 ? (
+            <p className="text-gray-500 text-center">No Tasks</p>
+          ) : (
+            status.tasks.map((task) => (
+              <TaskCard key={task.id} task={task} status={status} />
+            ))
+          )}
         </div>
       </div>
     );

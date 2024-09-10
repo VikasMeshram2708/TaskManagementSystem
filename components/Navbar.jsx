@@ -18,6 +18,7 @@ export default function Navbar() {
           className="px-4 py-2 rounded text-white bg-red-500 hover:bg-red-600 font-bold"
         >
           Logout
+          <span className="ml-3">{data?.user?.email.split(" ")[0]}</span>
         </button>
       ) : (
         <div className="flex items-center gap-3">

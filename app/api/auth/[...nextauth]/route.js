@@ -1,9 +1,8 @@
-import { prismaInstance } from "@/helpers/PrismaInstance";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import toast from "react-hot-toast";
+import { prismaInstance } from "helpers/PrismaInstance";
 
 const handler = NextAuth({
   pages: {

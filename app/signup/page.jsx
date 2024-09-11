@@ -136,7 +136,7 @@ export default function SignUpPage() {
             Sign Up
           </button>
           <div className="flex flex-col items-center gap-3 justify-center">
-            <p>
+            <p data-testid="redirectLink">
               Already a user ? <Link href="/login">Login</Link>
             </p>
             <button

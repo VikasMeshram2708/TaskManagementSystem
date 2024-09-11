@@ -1,7 +1,7 @@
-import { ConnectDB } from "@/helpers/DB";
-import ErrorHandler from "@/helpers/ErrorHandler";
-import { GetUserData } from "@/helpers/GetUserData";
-import { prismaInstance } from "@/helpers/PrismaInstance";
+import { ConnectDB } from "helpers/DB";
+import ErrorHandler from "helpers/ErrorHandler";
+import { GetUserData } from "helpers/GetUserData";
+import { prismaInstance } from "helpers/PrismaInstance";
 import { NextResponse } from "next/server";
 
 export const GET = async (request) => {

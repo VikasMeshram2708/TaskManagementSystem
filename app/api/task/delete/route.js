@@ -1,6 +1,6 @@
-import { deleteTaskSchema } from "@/app/models/Task";
-import ErrorHandler from "@/helpers/ErrorHandler";
-import { prismaInstance } from "@/helpers/PrismaInstance";
+import { deleteTaskSchema } from "app/models/Task";
+import ErrorHandler from "helpers/ErrorHandler";
+import { prismaInstance } from "helpers/PrismaInstance";
 import { NextResponse } from "next/server";
 
 export const DELETE = async (request) => {

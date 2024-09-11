@@ -1,14 +1,14 @@
-import { TaskSchema } from "@/app/models/Task";
-import { ConnectDB } from "@/helpers/DB";
-import ErrorHandler from "@/helpers/ErrorHandler";
-import { prismaInstance } from "@/helpers/PrismaInstance";
+import { TaskSchema } from "app/models/Task";
+import { ConnectDB } from "helpers/DB";
+import ErrorHandler from "helpers/ErrorHandler";
+import { prismaInstance } from "helpers/PrismaInstance";
 import { NextResponse } from "next/server";
 
 export const POST = async (request) => {
   try {
     // Parse and validate the request body
     const reqBody = await request.json();
-    
+
     const task = TaskSchema.parse(reqBody);
 
     // Connect to the database
@@ -29,10 +29,7 @@ export const POST = async (request) => {
     });
 
     // Return a success response
-    return NextResponse.json(
-      { message: "Task Created" },
-      { status: 201 }
-    );
+    return NextResponse.json({ message: "Task Created" }, { status: 201 });
   } catch (error) {
     // Handle errors and return an appropriate response
     return ErrorHandler(request, error);

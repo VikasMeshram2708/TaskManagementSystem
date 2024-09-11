@@ -1,7 +1,7 @@
-import { UpdateTaskSchema } from "@/app/models/Task";
-import { ConnectDB } from "@/helpers/DB";
-import ErrorHandler from "@/helpers/ErrorHandler";
-import { prismaInstance } from "@/helpers/PrismaInstance";
+import { UpdateTaskSchema } from "app/models/Task";
+import { ConnectDB } from "helpers/DB";
+import ErrorHandler from "helpers/ErrorHandler";
+import { prismaInstance } from "helpers/PrismaInstance";
 import { NextResponse } from "next/server";
 
 export const PUT = async (request) => {
@@ -27,7 +27,7 @@ export const PUT = async (request) => {
     });
 
     // Return a success response
-    return NextResponse.json({ message: "Task UpdatedI" }, { status: 201 });
+    return NextResponse.json({ message: "Task Updated" }, { status: 201 });
   } catch (error) {
     // Handle errors and return an appropriate response
     return ErrorHandler(request, error);

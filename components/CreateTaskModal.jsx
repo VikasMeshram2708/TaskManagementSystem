@@ -53,14 +53,16 @@ export default function CreateTaskModal({ setToggleForm, tasks, setTasks }) {
 
   const { mutate } = useMutation({
     mutationFn: createTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tasks"],
+      });
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     mutate(details); // Pass form data to mutate
-    queryClient.invalidateQueries({
-      queryKey: ["tasks"],
-    });
   };
 
   return (

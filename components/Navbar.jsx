@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function Navbar() {
   const { data, status } = useSession();
-  console.log('user-data', data)
+  // console.log('user-data', data)
   return (
     <nav className="bg-blue-500 p-4 flex items-center justify-between shadow-md">
       <h2 className="text-2xl font-bold text-white">
@@ -19,8 +19,8 @@ export default function Navbar() {
           onClick={() => signOut("google")}
           className="flex items-center px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 font-semibold shadow-md hover:shadow-lg"
         >
-          <MdOutlineLogout className="w-5 h-5 mr-2" />
           <span>Logout</span>
+          <MdOutlineLogout className="w-5 h-5 ml-2 font-bold" />
       
         </button>
       ) : (

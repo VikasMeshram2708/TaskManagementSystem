@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import TaskModal from "./TaskModal";
 
 export default function ListTask({ tasks, setTasks }) {
   const [todos, setTodos] = useState([]);
@@ -86,6 +87,9 @@ export default function ListTask({ tasks, setTasks }) {
   };
 
   const TaskCard = ({ task, status }) => {
+    const [toggleView, setToggleView] = useState(false);
+    const [editable, setEditable] = useState(false);
+
     const [{ isDragging }, dragRef] = useDrag(() => ({
       type: "task",
       item: { id: task.id, status: task.status },
@@ -116,13 +120,13 @@ export default function ListTask({ tasks, setTasks }) {
         } ${isOver && canDrop ? "bg-gray-200" : ""}`}
       >
         <div>
-          <h3 className="font-medium text-gray-800 capitalize">{task.title}</h3>
-          <p className="text-sm text-gray-600 capitalize">{task.description}</p>
-          <p className="text-xs text-gray-500 mt-2">
+          <h3 className="font-medium text-black capitalize">{task.title}</h3>
+          <p className="text-sm text-black capitalize">{task.description}</p>
+          <p className="text-sm text-black mt-5">
             Created At : {new Date(task.createdAt).toLocaleDateString()}
           </p>
         </div>
-        <div className="flex items-center gap-4 justify-end">
+        <div className="flex items-center gap-4 justify-end mt-5">
           <button
             className="text-sm px-2 py-1 rounded text-white font-bold bg-red-500 hover:bg-red-600 transition-colors duration-300"
             type="button"
@@ -130,18 +134,31 @@ export default function ListTask({ tasks, setTasks }) {
             Delete
           </button>
           <button
+            onClick={() => setToggleView((prev) => !prev)}
             className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors duration-300"
             type="button"
           >
             View
           </button>
           <button
+            onClick={() => {
+              setEditable(true);
+              setToggleView((prev) => !prev);
+            }}
             className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
             type="button"
           >
             Edit
           </button>
         </div>
+        {toggleView && (
+          <TaskModal
+            task={task}
+            editable={editable}
+            toggleView={toggleView}
+            setToggleView={setToggleView}
+          />
+        )}
       </div>
     );
   };

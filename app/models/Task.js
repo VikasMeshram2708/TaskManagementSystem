@@ -35,3 +35,7 @@ export const UpdateTaskSchema = z.object({
     .max(50, { message: "Status cannot exceed 50 characters" })
     .optional(),
 });
+
+export const deleteTaskSchema = z.object({
+  taskId: z.string().uuid(),
+});

@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import TaskModal from "./TaskModal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export default function ListTask({ tasks, setTasks }) {
+  const queryClient = useQueryClient();
+
   const [todos, setTodos] = useState([]);
   const [inProgress, setInProgress] = useState([]);
   const [done, setDone] = useState([]);
@@ -112,6 +116,40 @@ export default function ListTask({ tasks, setTasks }) {
       }),
     });
 
+    const handleDelete = useMutation({
+      mutationFn: async (id) => {
+        try {
+          const res = await fetch("/api/task/delete", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              taskId: id,
+            }),
+          });
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error?.message || "Failed to delete task");
+          }
+
+          const result = await res.json();
+          toast.success(result?.message || "Task Deleted successfully");
+          return result;
+        } catch (error) {
+          toast.error(error.message);
+          throw error;
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["tasks"],
+        });
+        setToggleView(false);
+      },
+    });
+
     return (
       <div
         ref={(node) => dragRef(dropRef(node))}
@@ -128,6 +166,7 @@ export default function ListTask({ tasks, setTasks }) {
         </div>
         <div className="flex items-center gap-4 justify-end mt-5">
           <button
+            onClick={() => handleDelete.mutate(task.id)}
             className="text-sm px-2 py-1 rounded text-white font-bold bg-red-500 hover:bg-red-600 transition-colors duration-300"
             type="button"
           >

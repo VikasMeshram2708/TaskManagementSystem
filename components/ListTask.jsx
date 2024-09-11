@@ -29,49 +29,57 @@ export default function ListTask({ tasks, setTasks }) {
   // Handle task drop to update its status or position
   const handleDrop = async (draggedTask, newStatus, targetTask) => {
     try {
-      const updatedTasks = await Promise.all(tasks.map(async (task) => {
-        if (task.id === draggedTask.id) {
-          // Update the task's status if moved between columns
-          const res = await fetch('/api/task/update', {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              taskId: task.id,
-              status: newStatus,
-            })
-          });
-  
-          if (!res.ok) {
-            throw new Error('Failed to update task on server');
+      const updatedTasks = await Promise.all(
+        tasks.map(async (task) => {
+          if (task.id === draggedTask.id) {
+            // Update the task's status if moved between columns
+            const res = await fetch("/api/task/update", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                taskId: task.id,
+                status: newStatus,
+              }),
+            });
+
+            if (!res.ok) {
+              throw new Error("Failed to update task on server");
+            }
+
+            // Only update local state if the API call was successful
+            return { ...task, status: newStatus };
           }
-  
-          // Only update local state if the API call was successful
-          return { ...task, status: newStatus };
-        }
-        return task;
-      }));
-  
+          return task;
+        })
+      );
+
       if (targetTask) {
-        const filteredTasks = updatedTasks.filter((task) => task.status === newStatus);
-        const targetIndex = filteredTasks.findIndex((t) => t.id === targetTask.id);
-        const draggedIndex = filteredTasks.findIndex((t) => t.id === draggedTask.id);
-  
+        const filteredTasks = updatedTasks.filter(
+          (task) => task.status === newStatus
+        );
+        const targetIndex = filteredTasks.findIndex(
+          (t) => t.id === targetTask.id
+        );
+        const draggedIndex = filteredTasks.findIndex(
+          (t) => t.id === draggedTask.id
+        );
+
         // Reorder tasks within the same column
         const [removed] = filteredTasks.splice(draggedIndex, 1);
         filteredTasks.splice(targetIndex, 0, removed);
-  
+
         setTasks(
-          updatedTasks.map((task) =>
-            filteredTasks.find((t) => t.id === task.id) || task
+          updatedTasks.map(
+            (task) => filteredTasks.find((t) => t.id === task.id) || task
           )
         );
       } else {
         setTasks(updatedTasks);
       }
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
       // Here you might want to show an error message to the user
       // and possibly revert the drag operation
     }
@@ -103,15 +111,37 @@ export default function ListTask({ tasks, setTasks }) {
     return (
       <div
         ref={(node) => dragRef(dropRef(node))}
-        className={`bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-200 ${
+        className={`bg-blue-500/50 p-4 rounded-lg grid gap-4 shadow hover:shadow-lg transition-shadow duration-200 ${
           isDragging ? "opacity-50" : "opacity-100"
         } ${isOver && canDrop ? "bg-gray-200" : ""}`}
       >
-        <h3 className="font-medium text-gray-800">{task.title}</h3>
-        <p className="text-sm text-gray-600">{task.description}</p>
-        <p className="text-xs text-gray-500 mt-2">
-          {new Date(task.createdAt).toLocaleDateString()}
-        </p>
+        <div>
+          <h3 className="font-medium text-gray-800 capitalize">{task.title}</h3>
+          <p className="text-sm text-gray-600 capitalize">{task.description}</p>
+          <p className="text-xs text-gray-500 mt-2">
+            Created At : {new Date(task.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-4 justify-end">
+          <button
+            className="text-sm px-2 py-1 rounded text-white font-bold bg-red-500 hover:bg-red-600 transition-colors duration-300"
+            type="button"
+          >
+            Delete
+          </button>
+          <button
+            className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors duration-300"
+            type="button"
+          >
+            View
+          </button>
+          <button
+            className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+            type="button"
+          >
+            Edit
+          </button>
+        </div>
       </div>
     );
   };

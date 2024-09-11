@@ -6,7 +6,6 @@ import CreateTask from "@/components/CreateTask";
 import ListTask from "@/components/ListTask";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
@@ -28,11 +27,7 @@ export default function Home() {
   });
 
   if (isLoading) {
-    return (
-      <div className="text-center relative aspect-video">
-        <Image src="https://is.gd/RZaewB" alt="loading" layout="fill" />
-      </div>
-    );
+    return <p className="text-3xl font-bold text-center text-cyan-500">Loading...</p>;
   }
 
   return (

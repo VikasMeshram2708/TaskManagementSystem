@@ -22,26 +22,27 @@ export default function LoginPage() {
 
   async function onSubmit(data) {
     console.log("Submitted data:", data);
-    try {
-      const res = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
+    await signIn("credentials", data);
+    // try {
+    //   const res = await fetch("/api/user/login", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
+    //   const result = await res.json();
 
-      if (!res.ok) {
-        return toast.error(result.message || "Login failed");
-      }
-      toast.success(result.message || "Login successful");
-      console.log("Response data:", result);
-      router.push("/");
-    } catch (error) {
-      console.log("Something went wrong. Login failed:", error);
-      toast.error("Something went wrong. Login failed");
-    }
+    //   if (!res.ok) {
+    //     return toast.error(result.message || "Login failed");
+    //   }
+    //   toast.success(result.message || "Login successful");
+    //   console.log("Response data:", result);
+    //   router.push("/");
+    // } catch (error) {
+    //   console.log("Something went wrong. Login failed:", error);
+    //   toast.error("Something went wrong. Login failed");
+    // }
   }
 
   async function handleGoogleSignIn() {

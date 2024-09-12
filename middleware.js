@@ -1,24 +1,32 @@
+import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function middleware(request) {
-  const token = request.cookies.get("next-auth.session-token")?.value;
+  try {
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    const path = request.nextUrl.pathname;
 
-  // const path = await request.nextUrl().pathname;
-  const path = request.nextUrl.pathname;
+    // Define paths that are publicly accessible
+    const isPublicPath = ["/login", "/signup"].includes(path);
+    
+    if (!token && !isPublicPath) {
+      // Redirect to login if the user is not authenticated and trying to access a protected path
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
 
-  const isPublicPath = path === "/login" || path === "/signup";
+    if (token && isPublicPath) {
+      // Redirect authenticated users away from public pages like login/signup
+      return NextResponse.redirect(new URL("/", request.url)); // Redirect to home or dashboard
+    }
 
-  // console.log("path", path);
-
-  if (!token && !isPublicPath) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  if (token && isPublicPath) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.next(); // Proceed if no redirects are required
+  } catch (error) {
+    console.error("Error in middleware:", error);
+    // Optionally handle errors here (e.g., redirect to a custom error page)
+    return NextResponse.redirect(new URL("/error", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/", "/login", "/signup"],
+  matcher: ["/", "/login", "/signup"], // Secure paths that trigger the middleware
 };

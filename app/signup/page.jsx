@@ -48,7 +48,7 @@ export default function SignUpPage() {
 
   async function handleGoogleSignUp() {
     try {
-      await signIn("google"); // Ensure you have Google provider configured in NextAuth
+      await signIn("google", { callbackUrl: "/login" }); // Ensure you have Google provider configured in NextAuth
     } catch (error) {
       console.error("Google sign-in error:", error);
       toast.error("Google sign-in failed");

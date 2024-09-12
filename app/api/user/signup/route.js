@@ -1,7 +1,7 @@
-import { CreateUserSchema } from "@/app/models/User";
-import { ConnectDB } from "@/helpers/DB";
-import ErrorHandler from "@/helpers/ErrorHandler";
-import { prismaInstance } from "@/helpers/PrismaInstance";
+import { CreateUserSchema } from "app/models/User";
+import { ConnectDB } from "helpers/DB";
+import ErrorHandler from "helpers/ErrorHandler";
+import { prismaInstance } from "helpers/PrismaInstance";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 

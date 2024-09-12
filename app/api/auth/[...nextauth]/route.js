@@ -9,7 +9,7 @@ const handler = NextAuth({
     signIn: "/login",
     newUser: "/signup",
   },
-  secret: process.env.NextAuth_SECRET, // Fixed variable name
+  secret: process.env.NEXTAUTH_SECRET, // Fixed variable name
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -35,7 +35,6 @@ const handler = NextAuth({
         return user; // Return the user object if authentication is successful
       },
     }),
-
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -49,17 +48,17 @@ const handler = NextAuth({
           if (!existingUser) {
             await prismaInstance.user.create({
               data: {
-                firstname: profile.name?.split(" ")[0] || "Google",
-                lastname: profile.name?.split(" ").slice(1).join(" ") || "User",
+                firstname: profile.given_name || "Google",
+                lastname: profile.family_name || "User",
                 email: user.email,
                 password: "", // No password for OAuth users
               },
             });
           }
-          return true;
+          return true; // Continue with the login process
         } catch (error) {
           console.error("Error signing in with Google:", error);
-          return false;
+          return false; // Prevent login if there is an error
         }
       }
       return true;
@@ -68,6 +67,10 @@ const handler = NextAuth({
       session.user.id = token.id;
       session.accessToken = token.accessToken;
       return session;
+    },
+    authorized({ req, token }) {
+      console.log("au-token", token);
+      if (token) return true; // If there is a token, the user is authenticated
     },
   },
 });

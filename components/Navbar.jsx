@@ -14,7 +14,7 @@ export default function Navbar() {
       </h2>
       {status === "loading" ? (
         <p className="text-lg font-medium text-white">Loading...</p>
-      ) : data?.user ? (
+      ) : status === "authenticated" ? (
         <button
           onClick={() => signOut("google")}
           className="flex items-center px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 font-semibold shadow-md hover:shadow-lg"

@@ -8,12 +8,14 @@ export const GET = async (request) => {
   try {
     const user = await GetUserData(request);
 
-    if (!user || !user.email) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
+    // console.log('user', user)
+
+    // if (!user || !user.email) {
+    //   return NextResponse.json(
+    //     { error: "Authentication required" },
+    //     { status: 401 }
+    //   );
+    // }
 
     // connect db
     await ConnectDB();

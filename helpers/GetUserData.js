@@ -4,7 +4,7 @@ export async function GetUserData(request) {
   try {
     const token = await getToken({
       req: request,
-      secret: process.env.NextAuth_SECRET,
+      secret: process.env.NEXTAUTH_SECRET,
     });
     if (!token) return undefined;
     return token;

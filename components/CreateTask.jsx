@@ -6,7 +6,7 @@ import CreateTaskModal from "./CreateTaskModal";
 export default function CreateTask({tasks, setTasks}) {
   const [toggleForm, setToggleForm] = useState(false);
   return (
-    <section className="container mx-auto">
+    <section className="container mx-auto px-4 py-2">
       <button
         onClick={() => setToggleForm((prev) => !prev)}
         type="button"

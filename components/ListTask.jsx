@@ -152,53 +152,58 @@ export default function ListTask({ tasks, setTasks }) {
 
     return (
       <div
-        ref={(node) => dragRef(dropRef(node))}
-        className={`bg-blue-500/50 p-4 rounded-lg grid gap-4 shadow hover:shadow-lg transition-shadow duration-200 ${
-          isDragging ? "opacity-50" : "opacity-100"
-        } ${isOver && canDrop ? "bg-gray-200" : ""}`}
-      >
-        <div>
-          <h3 className="font-medium text-black capitalize">{task.title}</h3>
-          <p className="text-sm text-black capitalize">{task.description}</p>
-          <p className="text-sm text-black mt-5">
-            Created At : {new Date(task.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="flex items-center gap-4 justify-end mt-5">
-          <button
-            onClick={() => handleDelete.mutate(task.id)}
-            className="text-sm px-2 py-1 rounded text-white font-bold bg-red-500 hover:bg-red-600 transition-colors duration-300"
-            type="button"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => setToggleView((prev) => !prev)}
-            className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors duration-300"
-            type="button"
-          >
-            View
-          </button>
-          <button
-            onClick={() => {
-              setEditable(true);
-              setToggleView((prev) => !prev);
-            }}
-            className="text-sm px-2 py-1 rounded text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
-            type="button"
-          >
-            Edit
-          </button>
-        </div>
-        {toggleView && (
-          <TaskModal
-            task={task}
-            editable={editable}
-            toggleView={toggleView}
-            setToggleView={setToggleView}
-          />
-        )}
+      ref={(node) => dragRef(dropRef(node))}
+      className={`bg-blue-500/50 p-4 rounded-lg grid gap-4 shadow hover:shadow-lg transition-shadow duration-200 ${
+        isDragging ? "opacity-50" : "opacity-100"
+      } ${isOver && canDrop ? "bg-gray-200" : ""}`}
+    >
+      <div>
+        <h3 className="font-medium text-black capitalize break-words">
+          {task.title}
+        </h3>
+        <p className="text-sm text-black capitalize break-words">
+          {task.description}
+        </p>
+        <p className="text-sm text-black mt-5">
+          Created At: {new Date(task.createdAt).toLocaleDateString()}
+        </p>
       </div>
+      <div className="flex items-center gap-2 sm:gap-4 justify-end mt-5 flex-wrap">
+        <button
+          onClick={() => handleDelete.mutate(task.id)}
+          className="text-sm px-3 py-1 rounded text-white font-bold bg-red-500 hover:bg-red-600 transition-colors duration-300"
+          type="button"
+        >
+          Delete
+        </button>
+        <button
+          onClick={() => setToggleView((prev) => !prev)}
+          className="text-sm px-3 py-1 rounded text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors duration-300"
+          type="button"
+        >
+          View
+        </button>
+        <button
+          onClick={() => {
+            setEditable(true);
+            setToggleView((prev) => !prev);
+          }}
+          className="text-sm px-3 py-1 rounded text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+          type="button"
+        >
+          Edit
+        </button>
+      </div>
+      {toggleView && (
+        <TaskModal
+          task={task}
+          editable={editable}
+          toggleView={toggleView}
+          setToggleView={setToggleView}
+        />
+      )}
+    </div>
+    
     );
   };
 
@@ -235,7 +240,7 @@ export default function ListTask({ tasks, setTasks }) {
   };
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-6 px-4">
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {statuses.map((status, i) => (
           <Column key={i} status={status} />

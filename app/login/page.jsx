@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { LoginUserSchema } from "../models/User";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const {
@@ -19,12 +18,15 @@ export default function LoginPage() {
 
   async function onSubmit(data) {
     console.log("Submitted data:", data);
-    await signIn("credentials", data, { callbackUrl: "/" });
+    await signIn("credentials", {
+      ...data,
+      callbackUrl: "/",
+    });
   }
 
   async function handleGoogleSignIn() {
     try {
-      await signIn("google"); // Ensure you have Google provider configured in NextAuth
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       console.error("Google sign-in error:", error);
       toast.error("Google sign-in failed");
@@ -77,7 +79,10 @@ export default function LoginPage() {
 
           <div className="flex flex-col items-center gap-3 mt-4">
             <p className="text-gray-600">
-              Not a user? <Link href="/signup" className="text-blue-500">Sign Up</Link>
+              Not a user?{" "}
+              <Link href="/signup" className="text-blue-500">
+                Sign Up
+              </Link>
             </p>
             <button
               onClick={handleGoogleSignIn}

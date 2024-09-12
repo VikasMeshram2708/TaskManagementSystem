@@ -20,7 +20,7 @@ export default function Navbar() {
           className="flex items-center px-3 py-2 md:px-4 md:py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 font-semibold shadow-md hover:shadow-lg"
         >
           <span>Logout</span>
-          <MdOutlineLogout className="w-5 h-5 ml-2" />
+          <MdOutlineLogout data-testid="logout-icon" className="w-5 h-5 ml-2" />
         </button>
       ) : (
         <div className="flex items-center gap-2 md:gap-4">

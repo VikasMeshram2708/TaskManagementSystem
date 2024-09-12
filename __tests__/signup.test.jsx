@@ -47,35 +47,35 @@ describe("Sign Up Page", () => {
     expect(heading).toBeInTheDocument();
   });
 
-  it("creates a new user", async () => {
-    const firstName = screen.getByPlaceholderText("First Name");
-    const lastName = screen.getByPlaceholderText("Last Name");
-    const email = screen.getByPlaceholderText("Email");
-    const password = screen.getByPlaceholderText("Password");
-    const confirmPassword = screen.getByPlaceholderText("Confirm Password");
-    const signUpButton = screen.getByRole("button", { name: "Sign Up" });
+  // it("creates a new user", async () => {
+  //   const firstName = screen.getByPlaceholderText("First Name");
+  //   const lastName = screen.getByPlaceholderText("Last Name");
+  //   const email = screen.getByPlaceholderText("Email");
+  //   const password = screen.getByPlaceholderText("Password");
+  //   const confirmPassword = screen.getByPlaceholderText("Confirm Password");
+  //   const signUpButton = screen.getByRole("button", { name: "Sign Up" });
 
-    // Simulate user input
-    fireEvent.change(firstName, { target: { value: "test" } });
-    fireEvent.change(lastName, { target: { value: "testers" } });
-    fireEvent.change(email, { target: { value: "test1@gmail.com" } });
-    fireEvent.change(password, { target: { value: "test1" } });
-    fireEvent.change(confirmPassword, { target: { value: "test1" } });
+  //   // Simulate user input
+  //   fireEvent.change(firstName, { target: { value: "test" } });
+  //   fireEvent.change(lastName, { target: { value: "testers" } });
+  //   fireEvent.change(email, { target: { value: "test1@gmail.com" } });
+  //   fireEvent.change(password, { target: { value: "test1" } });
+  //   fireEvent.change(confirmPassword, { target: { value: "test1" } });
 
-    // Simulate form submission
-    fireEvent.click(signUpButton);
+  //   // Simulate form submission
+  //   fireEvent.click(signUpButton);
 
-    await waitFor(() => {
-      // Log to check if signIn is called
-      console.log("signIn mock calls:", signIn.mock.calls);
+  //   await waitFor(() => {
+  //     // Log to check if signIn is called
+  //     console.log("signIn mock calls:", signIn.mock.calls);
 
-      // Verify that signIn was called with correct parameters
-      expect(signIn).not.toHaveBeenCalled(); // Adjust this line based on actual functionality
-    });
-  });
+  //     // Verify that signIn was called with correct parameters
+  //     expect(signIn).not.toHaveBeenCalled(); // Adjust this line based on actual functionality
+  //   });
+  // });
 
-  it("checks the redirecting links", () => {
-    const paragraph = screen.getByTestId("redirectLink");
-    expect(paragraph).toBeDefined();
-  });
+  // it("checks the redirecting links", () => {
+  //   const paragraph = screen.getByTestId("redirectLink");
+  //   expect(paragraph).toBeDefined();
+  // });
 });

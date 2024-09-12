@@ -20,6 +20,7 @@ describe("Login Page", () => {
       </AppRouterContextProviderMock>
     );
   });
+
   it("renders a heading", () => {
     const heading = screen.getByRole("heading", {
       name: "Login",
@@ -42,7 +43,8 @@ describe("Login Page", () => {
       expect(signIn).toHaveBeenCalledWith("credentials", {
         email: "user1@gmail.com",
         password: "user1",
+        callbackUrl: "/",
       });
-    });
+    });    
   });
 });

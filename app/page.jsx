@@ -6,6 +6,7 @@ import CreateTask from "@/components/CreateTask";
 import ListTask from "@/components/ListTask";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
@@ -27,7 +28,9 @@ export default function Home() {
   });
 
   if (isLoading) {
-    return <p className="text-3xl font-bold text-center text-cyan-500">Loading...</p>;
+    return (
+      <p className="text-3xl font-bold text-center text-cyan-500">Loading...</p>
+    );
   }
 
   return (
@@ -35,6 +38,9 @@ export default function Home() {
       <div className="min-h-screen container mx-auto">
         <div className="my-5">
           <CreateTask tasks={tasks} setTasks={setTasks} />
+        </div>
+        <div className="my-5">
+          <SearchBar tasks={tasks} />
         </div>
         <div className="my-10">
           <ListTask tasks={tasks} setTasks={setTasks} />

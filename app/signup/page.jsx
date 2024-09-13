@@ -60,7 +60,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <section className="min-h-screen conatiner mx-auto px-4 py-2">
+    <section className="min-h-screen container mx-auto px-4 py-2">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="shadow shadow-gray-500 p-4 rounded w-full mt-20 max-w-lg mx-auto"

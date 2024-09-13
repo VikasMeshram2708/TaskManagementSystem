@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Navbar from "@/components/Navbar"; // adjust the import path
 import { useSession, signOut } from "next-auth/react";
-import { MdOutlineLogout } from "react-icons/md";
 import '@testing-library/jest-dom';
 
 // Mock next-auth react hooks

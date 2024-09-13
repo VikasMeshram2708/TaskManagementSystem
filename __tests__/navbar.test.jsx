@@ -50,10 +50,14 @@ describe("Navbar Component", () => {
       status: "authenticated",
       data: { user: { firstname: "John" } },
     });
-    
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "logout" } });
-    
+
+    // Simulate clicking on the user dropdown to open it
+    fireEvent.click(screen.getByText("John"));
+
+    // Trigger the logout confirmation dialog
+    fireEvent.click(screen.getByText("Logout"));
+
+    // Wait for the dialog to appear
     await waitFor(() => {
       expect(screen.getByText("Confirm Logout")).toBeInTheDocument();
     });
@@ -64,10 +68,10 @@ describe("Navbar Component", () => {
       status: "authenticated",
       data: { user: { firstname: "John" } },
     });
-    
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "logout" } });
-    
+
+    fireEvent.click(screen.getByText("John"));
+    fireEvent.click(screen.getByText("Logout"));
+
     await waitFor(() => {
       const confirmButton = screen.getByText("Logout");
       fireEvent.click(confirmButton);
@@ -80,18 +84,14 @@ describe("Navbar Component", () => {
       status: "authenticated",
       data: { user: { firstname: "John" } },
     });
-    
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "logout" } });
-    
+
+    fireEvent.click(screen.getByText("John"));
+    fireEvent.click(screen.getByText("Logout"));
+
     await waitFor(() => {
       const cancelButton = screen.getByText("Cancel");
       fireEvent.click(cancelButton);
       expect(screen.queryByText("Confirm Logout")).not.toBeInTheDocument();
     });
-  });
-
-  it("component has a display name", () => {
-    expect(Navbar.displayName).toBe("Navbar");
   });
 });

@@ -9,7 +9,7 @@ const handler = NextAuth({
     signIn: "/login",
     newUser: "/signup",
   },
-  secret: process.env.NEXTAUTH_SECRET, // Fixed variable name
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -19,20 +19,26 @@ const handler = NextAuth({
       name: "Credentials",
       async authorize(credentials) {
         const { email, password } = credentials;
-
         // Find the user by email
         const user = await prismaInstance.user.findUnique({
           where: {
             email: email,
           },
+          select: {
+            id: true,
+            email: true,
+            password: true,
+            firstname: true,
+            lastname: true,
+          },
         });
-
         // Handle user not found or invalid password
         if (!user || !(await bcrypt.compare(password, user.password))) {
           return null; // Return null if authentication fails
         }
-
-        return user; // Return the user object if authentication is successful
+        // Return the user object without the password
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword; // Return the user object if authentication is successful
       },
     }),
   ],
@@ -44,7 +50,6 @@ const handler = NextAuth({
           let existingUser = await prismaInstance.user.findFirst({
             where: { email: user.email },
           });
-
           if (!existingUser) {
             await prismaInstance.user.create({
               data: {
@@ -63,8 +68,18 @@ const handler = NextAuth({
       }
       return true;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.firstname = user.firstname;
+        token.lastname = user.lastname;
+      }
+      return token;
+    },
     async session({ session, token }) {
       session.user.id = token.id;
+      session.user.firstname = token.firstname;
+      session.user.lastname = token.lastname;
       session.accessToken = token.accessToken;
       return session;
     },

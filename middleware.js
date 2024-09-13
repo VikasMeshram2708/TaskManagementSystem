@@ -3,12 +3,16 @@ import { NextResponse } from "next/server";
 
 export async function middleware(request) {
   try {
-    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
     const path = request.nextUrl.pathname;
 
     // Define paths that are publicly accessible
     const isPublicPath = ["/login", "/signup"].includes(path);
-    
+
     if (!token && !isPublicPath) {
       // Redirect to login if the user is not authenticated and trying to access a protected path
       return NextResponse.redirect(new URL("/login", request.url));
@@ -28,5 +32,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/signup"], // Secure paths that trigger the middleware
+  matcher: ["/", "/login", "/signup", "/profile"], // Secure paths that trigger the middleware
 };

@@ -3,13 +3,14 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import { FaRegUserCircle } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { RiDeleteBack2Fill } from "react-icons/ri";
 
 export default function Navbar() {
   const { data, status } = useSession();
-  console.log("da", data?.user);
   const [tlogout, setTLogout] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   if (tlogout) {
     return (
@@ -27,6 +28,7 @@ export default function Navbar() {
               <span className="text-sm font-bold text-white">Logout</span>
             </button>
             <button
+              onClick={() => setTLogout(false)}
               type="button"
               className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-300"
               aria-label="Cancel Logout"
@@ -46,24 +48,31 @@ export default function Navbar() {
         <Link href="/">Task Management</Link>
       </h2>
       {status === "loading" ? (
-        <p className="text-base md:text-lg font-medium text-white">
-          Loading...
-        </p>
+        <p className="text-base md:text-lg font-medium text-white">Loading...</p>
       ) : status === "authenticated" ? (
         <>
-          <div className="relative inline-block text-left">
-            <select className="block px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
-              <option value="" className="py-2">
-                {data?.user?.name || data?.user?.firstname}
-              </option>
-              <option
-                onClick={() => setTLogout((prev) => !prev)}
-                value=""
-                className="py-2"
-              >
-                Logout
-              </option>
-            </select>
+          <div className="relative rounded">
+            <div
+              className="bg-gray-200 flex items-center gap-2 rounded px-4 py-2 cursor-pointer"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <FaRegUserCircle size={24} color="black" />
+              <span>{data?.user?.name || data?.user?.firstname}</span>
+            </div>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <ul className="py-2">
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <Link href="/profile">Profile</Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <button className="bg-red-500 p-2 rounded text-white font-black text-sm" onClick={() => setTLogout(true)}>
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </>
       ) : (

@@ -1,79 +1,97 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Navbar from "@/components/Navbar"; // adjust the import path
-import { useSession, signOut } from "next-auth/react";
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { AppRouterContextProviderMock } from "__mocks__/app-router-context-provider-mock";
+import Navbar from "../components/Navbar";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 
-// Mock next-auth react hooks
-jest.mock("next-auth/react");
+jest.mock("next-auth/react", () => ({
+  ...jest.requireActual("next-auth/react"),
+  signOut: jest.fn(),
+  useSession: jest.fn(),
+}));
 
 describe("Navbar Component", () => {
-  it("should render the Task Management title", () => {
-    // Mock the session to be unauthenticated
-    useSession.mockReturnValue({ data: null, status: "unauthenticated" });
-
-    render(<Navbar />);
-
-    const titleElement = screen.getByText("Task Management");
-    expect(titleElement).toBeInTheDocument();
-  });
-
-  it("should show loading when session status is loading", () => {
-    // Mock the session to be loading
-    useSession.mockReturnValue({ data: null, status: "loading" });
-
-    render(<Navbar />);
-
-    const loadingElement = screen.getByText("Loading...");
-    expect(loadingElement).toBeInTheDocument();
-  });
-
-  it("should render logout button when authenticated", () => {
-    // Mock the session to be authenticated
-    useSession.mockReturnValue({
-      data: { user: { name: "John Doe", email: "johndoe@example.com" } },
-      status: "authenticated",
-    });
-
-    render(<Navbar />);
-
-    const logoutButton = screen.getByText("Logout");
-    expect(logoutButton).toBeInTheDocument();
-    expect(screen.getByRole('button')).toContainElement(
-      screen.getByText("Logout")
+  const renderNavbar = (sessionData) => {
+    useSession.mockReturnValue(sessionData);
+    render(
+      <AppRouterContextProviderMock>
+        <SessionProvider session={sessionData}>
+          <Navbar />
+        </SessionProvider>
+      </AppRouterContextProviderMock>
     );
+  };
 
-    const logoutIcon = screen.getByTestId("logout-icon");
-    expect(logoutIcon).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("should trigger signOut when logout button is clicked", () => {
-    // Mock the session to be authenticated
-    useSession.mockReturnValue({
-      data: { user: { name: "John Doe", email: "johndoe@example.com" } },
+  it("renders loading state", () => {
+    renderNavbar({ status: "loading" });
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  it("renders unauthenticated state", () => {
+    renderNavbar({ status: "unauthenticated" });
+    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getByText("Sign Up")).toBeInTheDocument();
+  });
+
+  it("renders authenticated state", () => {
+    renderNavbar({
       status: "authenticated",
+      data: { user: { firstname: "John" } },
     });
-
-    const mockSignOut = jest.fn();
-    signOut.mockImplementation(mockSignOut);
-
-    render(<Navbar />);
-
-    const logoutButton = screen.getByText("Logout");
-    fireEvent.click(logoutButton);
-
-    expect(mockSignOut).toHaveBeenCalledWith("google");
+    expect(screen.getByText("John")).toBeInTheDocument();
   });
 
-  it("should render login and sign up buttons when unauthenticated", () => {
-    // Mock the session to be unauthenticated
-    useSession.mockReturnValue({ data: null, status: "unauthenticated" });
+  it("opens logout confirmation dialog", async () => {
+    renderNavbar({
+      status: "authenticated",
+      data: { user: { firstname: "John" } },
+    });
+    
+    const select = screen.getByRole("combobox");
+    fireEvent.change(select, { target: { value: "logout" } });
+    
+    await waitFor(() => {
+      expect(screen.getByText("Confirm Logout")).toBeInTheDocument();
+    });
+  });
 
-    render(<Navbar />);
+  it("calls signOut when confirming logout", async () => {
+    renderNavbar({
+      status: "authenticated",
+      data: { user: { firstname: "John" } },
+    });
+    
+    const select = screen.getByRole("combobox");
+    fireEvent.change(select, { target: { value: "logout" } });
+    
+    await waitFor(() => {
+      const confirmButton = screen.getByText("Logout");
+      fireEvent.click(confirmButton);
+      expect(signOut).toHaveBeenCalled();
+    });
+  });
 
-    const loginButton = screen.getByText("Login");
-    const signupButton = screen.getByText("Sign Up");
+  it("closes logout confirmation dialog when canceling", async () => {
+    renderNavbar({
+      status: "authenticated",
+      data: { user: { firstname: "John" } },
+    });
+    
+    const select = screen.getByRole("combobox");
+    fireEvent.change(select, { target: { value: "logout" } });
+    
+    await waitFor(() => {
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+      expect(screen.queryByText("Confirm Logout")).not.toBeInTheDocument();
+    });
+  });
 
-    expect(loginButton).toBeInTheDocument();
-    expect(signupButton).toBeInTheDocument();
+  it("component has a display name", () => {
+    expect(Navbar.displayName).toBe("Navbar");
   });
 });

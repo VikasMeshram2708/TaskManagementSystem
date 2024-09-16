@@ -40,7 +40,7 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
               )
               .map((task, i) =>
                 isLoading ? (
-                  <p className="text-3xl font-bold text-black text-center">Loading</p>
+                  <p key={i} className="text-3xl font-bold text-black text-center">Loading</p>
                 ) : (
                   <Card
                     key={i}

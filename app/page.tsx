@@ -6,7 +6,7 @@ import TaskColumn from "@/components/TaskColumn";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
-  const { data: tasks, isLoading } = useQuery({
+  const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
       try {
@@ -14,6 +14,7 @@ export default function Home() {
         if (localTasks) {
           return JSON.parse(localTasks);
         }
+        return [];
       } catch (error) {
         throw new Error("Failed to fetch the tasks");
       }

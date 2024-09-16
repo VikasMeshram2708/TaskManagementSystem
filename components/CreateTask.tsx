@@ -14,7 +14,7 @@ import { Input } from "./ui/input";
 import { Dispatch, SetStateAction, useState } from "react";
 import { CreateTaskSchema } from "@/app/models/TaskSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./ui/toast";
 
@@ -49,6 +49,8 @@ function TaskForm({
     resolver: zodResolver(CreateTaskSchema),
   });
 
+  const queryClient = useQueryClient();
+
   const { toast } = useToast();
 
   const { mutate } = useMutation({
@@ -61,7 +63,13 @@ function TaskForm({
             ? JSON.parse(existingTasksJson)
             : [];
 
-          const updatedTasks = [...existingTasks, data];
+          // Include id in the new task data
+          const newTask = {
+            ...data,
+            id: Math.floor(1000 * Math.random() * 9000),
+          };
+          const updatedTasks = [...existingTasks, newTask];
+
           localStorage.setItem("tasks", JSON.stringify(updatedTasks));
           resolve();
         }, 500)
@@ -72,6 +80,9 @@ function TaskForm({
       toast({
         title: "Success",
         description: "Task Created",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tasks"],
       });
       setTForm(false);
     },

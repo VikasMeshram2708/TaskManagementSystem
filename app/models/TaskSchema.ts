@@ -4,12 +4,12 @@ export const CreateTaskSchema = z.object({
   title: z
     .string()
     .min(2, { message: "Title must be at least 2 characters long." })
-    .max(50, { message: "Title cannot exceed 50 characters." }),
+    .max(250, { message: "Title cannot exceed 50 characters." }),
 
   description: z
     .string()
     .min(2, { message: "Description must be at least 2 characters long." })
-    .max(50, { message: "Description cannot exceed 50 characters." }),
+    .max(350, { message: "Description cannot exceed 50 characters." }),
 
   status: z
     .enum(["todo", "inProgress", "done"], {

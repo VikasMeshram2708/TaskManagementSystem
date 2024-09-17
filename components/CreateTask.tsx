@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "./ui/button";
@@ -55,42 +56,39 @@ function TaskForm({
 
   const { mutate } = useMutation({
     mutationFn: async (data: CreateTaskSchema) => {
-      await new Promise<void>((resolve) =>
-        setTimeout(() => {
-          const existingTasksJson = localStorage.getItem("tasks");
-
-          const existingTasks = existingTasksJson
-            ? JSON.parse(existingTasksJson)
-            : [];
-
-          // Include id in the new task data
-          const newTask = {
-            ...data,
-            id: Math.floor(1000 * Math.random() * 9000),
-          };
-          const updatedTasks = [...existingTasks, newTask];
-
-          localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-          resolve();
-        }, 500)
-      );
+      const res = await fetch("/api/task/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      console.log("ins", data);
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result?.message || "Failed to Create Task");
+      }
+      const result = await res.json();
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (result: any) => {
       reset();
       toast({
+        variant: "default",
         title: "Success",
-        description: "Task Created",
+        description: result?.message || "Task Created",
       });
       queryClient.invalidateQueries({
         queryKey: ["tasks"],
       });
       setTForm(false);
     },
-    onError: () => {
+    onError: (result: any) => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
+        description:
+          result?.message || "There was a problem with your request.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     },

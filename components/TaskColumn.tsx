@@ -83,97 +83,97 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4">
-      {statuses.map((status) => (
-        <Card
-          key={status.value}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, status.value)}
-          className="bg-gray-100 shadow-md min-h-80 max-h-[calc(100vh-100px)] p-4 overflow-y-auto"
-        >
-          <div className="bg-blue-500 text-white font-bold rounded text-center p-2">
-            <h2>{status.label}</h2>
-          </div>
-          <div className="py-5 space-y-4">
-            {isLoading ? (
-              <p className="text-3xl font-bold text-black text-center">
-                Loading...
-              </p>
-            ) : (
-              tasks
-                .filter(
-                  (task) =>
-                    task.status.toLowerCase() === status.value.toLowerCase()
-                )
-                .map((task) => (
-                  <Card
-                    draggable
-                    onDragStart={() => handleDragStart(task)}
-                    key={task.id} // Use unique identifier
-                    className="bg-blue-500/50 shadow-md rounded-lg"
-                  >
-                    <CardHeader className="p-4">
-                      <CardTitle className="flex text-black items-center space-x-2 text-base">
-                        <Label htmlFor="title" className="font-semibold">
-                          Title:
-                        </Label>
-                        <span className="capitalize">{task.title}</span>
-                      </CardTitle>
-                      <CardDescription className="flex text-black items-center space-x-2 text-base">
-                        <Label className="font-semibold">Description:</Label>
-                        <span className="capitalize">{task.description}</span>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 flex items-center space-x-2">
-                      <Label className="font-semibold">Created At:</Label>
-                      <p className="text-black text-sm">
-                        {new Date(task.createdAt).toDateString()}
-                      </p>
-                    </CardContent>
-                    <CardFooter className="flex items-center justify-end gap-2 p-4">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="font-bold"
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setIsEditable(true);
-                          setSelectedTask(task);
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="bg-blue-500 border-none font-bold text-white hover:bg-blue-600"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setIsEditable(false);
-                          setSelectedTask(task);
-                        }}
-                        variant="secondary"
-                        size="sm"
-                        className="bg-blue-700 text-white font-bold hover:bg-blue-600"
-                      >
-                        View Details
-                      </Button>
-                    </CardFooter>
-                    {selectedTask && (
-                      <TaskModal
-                        isEditable={isEditable}
-                        task={selectedTask}
-                        setSelectedTask={setSelectedTask}
-                      />
-                    )}
-                  </Card>
-                ))
-            )}
-          </div>
-        </Card>
-      ))}
-    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    {statuses.map((status) => (
+      <Card
+        key={status.value}
+        onDragOver={handleDragOver}
+        onDrop={(e) => handleDrop(e, status.value)}
+        className="bg-gray-100 shadow-md min-h-[300px] max-h-[calc(100vh-2rem)] p-4 overflow-y-auto"
+      >
+        <div className="bg-blue-500 text-white font-bold rounded text-center p-2">
+          <h2>{status.label}</h2>
+        </div>
+        <div className="py-5 space-y-4">
+          {isLoading ? (
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-black text-center">
+              Loading...
+            </p>
+          ) : (
+            tasks
+              .filter(
+                (task) =>
+                  task.status.toLowerCase() === status.value.toLowerCase()
+              )
+              .map((task) => (
+                <Card
+                  draggable
+                  onDragStart={() => handleDragStart(task)}
+                  key={task.id}
+                  className="bg-blue-500/50 shadow-md rounded-lg"
+                >
+                  <CardHeader className="p-2 sm:p-3 lg:p-4">
+                    <CardTitle className="flex flex-col sm:flex-row text-black items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm sm:text-base">
+                      <Label htmlFor="title" className="font-semibold">
+                        Title:
+                      </Label>
+                      <span className="capitalize">{task.title}</span>
+                    </CardTitle>
+                    <CardDescription className="flex flex-col sm:flex-row text-black items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm sm:text-base">
+                      <Label className="font-semibold">Description:</Label>
+                      <span className="capitalize">{task.description}</span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-2 sm:p-3 lg:p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                    <Label className="font-semibold">Created At:</Label>
+                    <p className="text-black text-xs sm:text-sm">
+                      {new Date(task.createdAt).toDateString()}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex flex-wrap items-center justify-end gap-2 p-2 sm:p-3 lg:p-4">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="font-bold text-xs sm:text-sm"
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setIsEditable(true);
+                        setSelectedTask(task);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="bg-blue-500 border-none font-bold text-white hover:bg-blue-600 text-xs sm:text-sm"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setIsEditable(false);
+                        setSelectedTask(task);
+                      }}
+                      variant="secondary"
+                      size="sm"
+                      className="bg-blue-700 text-white font-bold hover:bg-blue-600 text-xs sm:text-sm"
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                  {selectedTask && (
+                    <TaskModal
+                      isEditable={isEditable}
+                      task={selectedTask}
+                      setSelectedTask={setSelectedTask}
+                    />
+                  )}
+                </Card>
+              ))
+          )}
+        </div>
+      </Card>
+    ))}
+  </div>
   );
 }

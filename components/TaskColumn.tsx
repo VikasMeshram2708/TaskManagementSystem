@@ -12,6 +12,7 @@ import {
 } from "./ui/card";
 import { Label } from "./ui/label";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import TaskModal from "./TaskModal";
 
 type Props = {
   tasks: Task[];
@@ -20,6 +21,8 @@ type Props = {
 
 export default function TaskColumn({ tasks, isLoading }: Props) {
   const queryClient = useQueryClient();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isEditable, setIsEditable] = useState(false);
 
   const statuses = [
     { label: "Todo", value: "todo" },
@@ -32,25 +35,6 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
   function handleDragStart(taskItem: Task) {
     setDraggedTask(taskItem);
   }
-
-  // function handleDrop(e: DragEvent<HTMLDivElement>, newStatus: string) {
-  //   e.preventDefault();
-  //   if (!draggedTask) return;
-
-  //   const updatedTask = { ...draggedTask, status: newStatus };
-  //   const updatedTasks = tasks.map((task) =>
-  //     task.id === draggedTask.id ? updatedTask : task
-  //   );
-
-  //   // Update localStorage
-  //   queryClient.invalidateQueries({
-  //     queryKey: ["tasks"],
-  //   });
-  //   localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-
-  //   // Clear the dragged task
-  //   setDraggedTask(null);
-  // }
 
   const { mutate } = useMutation({
     mutationFn: async ({
@@ -113,7 +97,7 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
           <div className="py-5 space-y-4">
             {isLoading ? (
               <p className="text-3xl font-bold text-black text-center">
-                Loading
+                Loading...
               </p>
             ) : (
               tasks
@@ -155,6 +139,10 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
                         Delete
                       </Button>
                       <Button
+                        onClick={() => {
+                          setIsEditable(true);
+                          setSelectedTask(task);
+                        }}
                         variant="outline"
                         size="sm"
                         className="bg-blue-500 border-none font-bold text-white hover:bg-blue-600"
@@ -162,6 +150,10 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
                         Edit
                       </Button>
                       <Button
+                        onClick={() => {
+                          setIsEditable(false);
+                          setSelectedTask(task);
+                        }}
                         variant="secondary"
                         size="sm"
                         className="bg-blue-700 text-white font-bold hover:bg-blue-600"
@@ -169,6 +161,13 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
                         View Details
                       </Button>
                     </CardFooter>
+                    {selectedTask && (
+                      <TaskModal
+                        isEditable={isEditable}
+                        task={selectedTask}
+                        setSelectedTask={setSelectedTask}
+                      />
+                    )}
                   </Card>
                 ))
             )}

@@ -41,8 +41,14 @@ const handler = NextAuth({
         if (!user || !(await bcrypt.compare(password, user.password))) {
           return null; // Return null if authentication fails
         }
+        console.log("cred-user-da", user);
 
-        return user; // Return the user object if authentication is successful
+        return {
+          id: user?.id,
+          firstname: user?.firstname,
+          lastname: user?.lastname,
+          email: user?.email,
+        };
       },
     }),
 
@@ -75,23 +81,32 @@ const handler = NextAuth({
       }
       return true;
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
+      // console.log("Session callback - token:", token); // Debugging line
+
+      // Ensure session.user exists
       if (session.user) {
         session.user.email = token.email;
+        // Add firstname and lastname from the token to the session
         // @ts-ignore
         session.user.firstname = token.firstname;
         // @ts-ignore
         session.user.lastname = token.lastname;
       }
+
+      console.log("Session callback - session:", session); // Debugging line
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) {
+      // On initial sign in
       if (user) {
-        console.log("user", user);
         token.email = user.email;
-        token.firstname = user.name?.split(" ")[0];
-        token.lastname = user.name?.split(" ").pop();
+        // @ts-ignore
+        token.firstname = user.firstname || user.name?.split(" ")[0];
+        // @ts-ignore
+        token.lastname = user.lastname || user.name?.split(" ").pop();
       }
+      // console.log("JWT callback - token:", token); // Debugging line
       return token;
     },
   },

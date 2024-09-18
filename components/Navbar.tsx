@@ -1,6 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlignJustify, Clipboard } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -13,7 +23,8 @@ import {
 import { signOut, useSession } from "next-auth/react";
 
 export default function Navbar() {
-  const { status } = useSession();
+  const { status, data } = useSession();
+  // console.log("d", data);
   const isAuthenticated = status === "authenticated";
   const isLoading = status === "loading";
 
@@ -35,14 +46,45 @@ export default function Navbar() {
     </div>
   );
 
-  const LogoutButton = () => (
-    <Button
-      onClick={() => signOut()}
-      className="lg:block"
-      variant="destructive"
-    >
-      Logout
-    </Button>
+  const AvatarButton = () => (
+    <>
+      {/* <p>{String(data?.user?.firstname)}</p> */}
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <span>
+            <Avatar>
+              <AvatarImage
+                src={String(data?.user?.image)}
+                // @ts-ignore
+                alt={String(data?.user?.firstname)}
+              />
+              <AvatarFallback className="text-black">
+                {String(
+                  // @ts-ignore
+                  data?.user?.firstname[0] + String(data?.user?.lastname[0])
+                )}
+              </AvatarFallback>
+            </Avatar>
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Link href="/profile">Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Button
+              onClick={() => signOut()}
+              variant={"destructive"}
+              className="w-full"
+            >
+              Logout
+            </Button>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 
   // Navbar
@@ -53,7 +95,6 @@ export default function Navbar() {
         <Link href="/" className="flex items-center">
           <h2 className="text-3xl font-bold text-white flex items-center space-x-2">
             <Clipboard className="mr-2" />
-            <span>Task Manager</span>
           </h2>
         </Link>
 
@@ -62,7 +103,7 @@ export default function Navbar() {
           {isLoading ? (
             <LoadingIndicator />
           ) : isAuthenticated ? (
-            <LogoutButton />
+            <AvatarButton />
           ) : (
             <AuthButtons />
           )}
@@ -71,8 +112,8 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" aria-label="Open menu">
-              <AlignJustify color="white" />
+            <Button variant={"secondary"}>
+              <AlignJustify />
             </Button>
           </SheetTrigger>
           <SheetContent className="bg-slate-600">
@@ -92,7 +133,34 @@ export default function Navbar() {
                 <LoadingIndicator />
               ) : (
                 <div className="flex flex-col space-y-4 text-white">
-                  {isAuthenticated ? <LogoutButton /> : <AuthButtons />}
+                  {isAuthenticated ? (
+                    <>
+                      <Avatar>
+                        <AvatarImage
+                          src={String(data?.user?.image)}
+                          // @ts-ignore
+                          alt={String(data?.user?.firstname)}
+                        />
+                        <AvatarFallback className="text-black">
+                          {String(
+                            // @ts-ignore
+                            data?.user?.firstname[0] +
+                              // @ts-ignore
+                              String(data?.user?.lastname[0])
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Button
+                        onClick={() => signOut()}
+                        variant={"destructive"}
+                        className="w-full"
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <AuthButtons />
+                  )}
                 </div>
               )}
             </SheetHeader>

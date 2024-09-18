@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -9,11 +9,10 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Label } from "./ui/label";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateTaskSchema } from "@/app/models/TaskSchema";
-import { useMutation } from "@tanstack/react-query";
+// import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   task: Task | null;
@@ -26,49 +25,64 @@ export default function TaskModal({
   setSelectedTask,
   isEditable,
 }: Props) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<UpdateTaskSchema>({
-    resolver: zodResolver(UpdateTaskSchema),
+  const queryClient = useQueryClient();
+  const [uQuery, setUQuery] = useState({
+    id: task?.id,
+    title: task?.title,
+    description: task?.description,
   });
 
-  const { mutate } = useMutation({
-    mutationFn: async (data: UpdateTaskSchema) => {
-      console.log("ud", data);
-      await Promise.resolve();
-    },
-    onSuccess: () => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const uResult = UpdateTaskSchema.safeParse(uQuery);
+      if (!uResult.success) {
+        const filteredErr = uResult?.error?.issues?.map((e) => ({
+          field: e.path.join("."),
+          message: e?.message,
+        }));
+        return toast({
+          variant: "destructive",
+          title: `Error : ${filteredErr?.map((e) => e.field)}`,
+          description: filteredErr?.map((e) => e.message) || "Invalid Data",
+        });
+      }
+      const data = uResult?.data;
+      const res = await fetch("/api/task/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: result?.message || "Failed to Update Task",
+        });
+        throw new Error(result?.message || "Failed to Update Task");
+      }
       toast({
-        variant: "default",
-        title: "Task Updated",
+        title: "Success",
+        description: result?.message || "Task Updated Successfully",
       });
-      setTimeout(() => {
-        setSelectedTask(null);
-      }, 1000);
-      return reset();
-    },
-    onError: () => {
-      return toast({
-        variant: "destructive",
-        title: "Failed to Update Task",
+      queryClient.invalidateQueries({
+        queryKey: ["tasks"],
       });
-    },
-  });
-
-  const onSubmit: SubmitHandler<UpdateTaskSchema> = (
-    data: UpdateTaskSchema
-  ) => {
-    console.log("udd", data);
-    mutate(data);
+      setSelectedTask(null);
+      return result;
+    } catch (error) {
+      throw new Error(`Something went wrong. Failed to update Task ${error}}`);
+    }
   };
   if (isEditable) {
     return (
       <Card className="fixed inset-0 backdrop-blur bg-black/50 w-full">
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={onSubmit}
           action=""
           className="max-w-lg bg-white mx-auto px-4 py-2 mt-20 rounded"
         >
@@ -83,28 +97,32 @@ export default function TaskModal({
                 Title
               </Label>
               <Input
-                defaultValue={task?.title}
-                {...register("title", { required: true })}
+                type="text"
+                value={uQuery?.title}
+                onChange={(e) =>
+                  setUQuery({
+                    ...uQuery,
+                    title: e.target.value,
+                  })
+                }
                 placeholder="Title"
               />
-              {errors?.title && (
-                <p className="text-sm text-red-500">{errors?.title?.message}</p>
-              )}
             </div>
             <div>
               <Label htmlFor="description" className="font-bold">
                 Description
               </Label>
               <Input
-                defaultValue={task?.description}
-                {...register("description", { required: true })}
+                type="text"
+                value={uQuery?.description}
+                onChange={(e) =>
+                  setUQuery({
+                    ...uQuery,
+                    description: e.target.value,
+                  })
+                }
                 placeholder="Description"
               />
-              {errors?.description && (
-                <p className="text-sm text-red-500">
-                  {errors?.description?.message}
-                </p>
-              )}
             </div>
           </CardContent>
           <CardFooter className="flex justify-end mt-10">

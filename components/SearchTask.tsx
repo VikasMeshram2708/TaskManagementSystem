@@ -4,7 +4,6 @@ import useDebounce from "@/lib/useDebounce";
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -112,7 +111,7 @@ export default function SearchTask({ tasks }: Props) {
                   {task.description}
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="flex gap-2 justify-end">
+              {/* <CardFooter className="flex gap-2 justify-end">
                 <Button variant="destructive" className="font-bold" size="sm">
                   Delete
                 </Button>
@@ -130,7 +129,7 @@ export default function SearchTask({ tasks }: Props) {
                 >
                   View Details
                 </Button>
-              </CardFooter>
+              </CardFooter> */}
             </Card>
           ))}
         </div>

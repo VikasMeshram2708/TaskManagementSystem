@@ -117,16 +117,16 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
                       <Label htmlFor="title" className="font-semibold">
                         Title:
                       </Label>
-                      <span className="capitalize">{task.title}</span>
+                      <span className="capitalize font-normal text-sm">{task.title}</span>
                     </CardTitle>
                     <CardDescription className="flex flex-col sm:flex-row text-black items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm sm:text-base">
                       <Label className="font-semibold">Description:</Label>
-                      <span className="capitalize">{task.description}</span>
+                      <span className="capitalize text-sm">{task.description}</span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-2 sm:p-3 lg:p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                     <Label className="font-semibold">Created At:</Label>
-                    <p className="text-black text-xs sm:text-sm">
+                    <p className="text-black text-xs">
                       {new Date(task.createdAt).toDateString()}
                     </p>
                   </CardContent>

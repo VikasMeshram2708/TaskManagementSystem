@@ -21,6 +21,7 @@ export const CreateTaskSchema = z.object({
 export type CreateTaskSchema = z.infer<typeof CreateTaskSchema>;
 
 export const UpdateTaskSchema = z.object({
+  id: z.string().uuid(),
   title: z
     .string()
     .min(2, { message: "Title must be at least 2 characters long." })

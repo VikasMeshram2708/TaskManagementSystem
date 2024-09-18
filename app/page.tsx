@@ -10,11 +10,12 @@ export default function Home() {
     queryKey: ["tasks"],
     queryFn: async () => {
       try {
-        const localTasks = localStorage.getItem("tasks");
-        if (localTasks) {
-          return JSON.parse(localTasks);
+        const res = await fetch("/api/task/all");
+        const result = await res.json();
+        if (!res.ok) {
+          throw new Error(result?.message || "Failed to fetch the Tasks.");
         }
-        return [];
+        return result?.tasks;
       } catch (error) {
         throw new Error("Failed to fetch the tasks");
       }

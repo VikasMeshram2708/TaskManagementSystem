@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { prismaInstance } from "@/lib/PrismaInstance";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
 
-const BASE_URL = process.env.NEXTAUTH_URL;
+// const BASE_URL = process.env.NEXTAUTH_URL;
 
 const handler = NextAuth({
   pages: {
@@ -14,52 +16,36 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
         email: {
           label: "Email",
-          type: "email",
-          placeholder: "Email",
         },
         password: {
-          password: "Password",
-          type: "password",
-          placeholder: "Password",
+          label: "Password",
         },
       },
+      // @ts-ignore
       async authorize(credentials) {
-        if (!credentials) return null;
+        if (!credentials) return;
         const { email, password } = credentials;
-        try {
-          const res = await fetch(`${BASE_URL}/api/user/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-            }),
-          });
 
-          if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.message || "Login failed");
-          }
-          const user = await res.json();
-          console.log("creds-user", user);
-          return {
-            id: user?.id,
-            firstname: user?.firstname,
-            lastname: user?.lastname,
-            email: user?.email,
-          };
-        } catch (error) {
-          console.error("Authentication error:", error);
-          return null;
+        // Find the user by email
+        const user = await prismaInstance.user.findUnique({
+          where: {
+            email: email,
+          },
+        });
+
+        // Handle user not found or invalid password
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+          return null; // Return null if authentication fails
         }
+
+        return user; // Return the user object if authentication is successful
       },
     }),
+
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -72,7 +58,6 @@ const handler = NextAuth({
           const existingUser = await prismaInstance.user.findUnique({
             where: { email: user.email! },
           });
-
           if (!existingUser) {
             await prismaInstance.user.create({
               data: {
@@ -90,21 +75,22 @@ const handler = NextAuth({
       }
       return true;
     },
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user = token;
+    async session({ session, token, user }) {
+      if (session.user) {
+        session.user.email = token.email;
+        // @ts-ignore
+        session.user.firstname = token.firstname;
+        // @ts-ignore
+        session.user.lastname = token.lastname;
       }
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
       if (user) {
         console.log("user", user);
-        (token.email = user.email),
-          (token.firstname = user?.name?.split(" ")[0]);
-        token.lastname = user?.name?.split(" ").pop();
+        token.email = user.email;
+        token.firstname = user.name?.split(" ")[0];
+        token.lastname = user.name?.split(" ").pop();
       }
       return token;
     },

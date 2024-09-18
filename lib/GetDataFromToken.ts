@@ -8,6 +8,8 @@ export async function GetDataFromToken(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET,
     });
 
+    // console.log("data-fromt-token", token);
+
     if (!token) return undefined;
     return token;
   } catch (error) {

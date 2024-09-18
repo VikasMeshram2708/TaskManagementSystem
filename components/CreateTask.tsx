@@ -63,7 +63,6 @@ function TaskForm({
         },
         body: JSON.stringify(data),
       });
-      console.log("ins", data);
       if (!res.ok) {
         const result = await res.json();
         throw new Error(result?.message || "Failed to Create Task");

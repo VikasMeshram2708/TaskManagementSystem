@@ -32,9 +32,9 @@ export default function SearchTask({ tasks }: Props) {
       setFilteredTasks([]);
     } else {
       const filtered = tasks.filter((task) => {
-        const matchesSearchQuery = task.title
-          .toLowerCase()
-          .includes(debouncedValue.toLowerCase());
+        const matchesSearchQuery =
+          task.title.toLowerCase().includes(debouncedValue.toLowerCase()) ||
+          task.description.toLowerCase().includes(debouncedValue.toLowerCase());
         const matchesStatus = selectQuery
           ? task.status.toLowerCase() === selectQuery.toLowerCase()
           : true;

@@ -42,3 +42,8 @@ export const UpdateTaskSchema = z.object({
     .optional(),
 });
 export type UpdateTaskSchema = z.infer<typeof UpdateTaskSchema>;
+
+export const deleteTaskSchema = z.object({
+  id: z.string().uuid(),
+});
+export type deleteTaskSchema = z.infer<typeof deleteTaskSchema>;

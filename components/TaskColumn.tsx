@@ -62,10 +62,6 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
       }
 
       const updatedTask = uResult.data;
-      // const updatedTask = { ...draggedTask, status: newStatus };
-      // const updatedTasks = tasks.map((task) =>
-      //   task.id === draggedTask.id ? updatedTask : task
-      // );
 
       const res = await fetch("/api/task/update", {
         method: "PUT",
@@ -100,6 +96,47 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks"],
+      });
+    },
+  });
+
+  const { mutate: deleteMutate } = useMutation({
+    mutationFn: async (taskId: string) => {
+      try {
+        const res = await fetch("/api/task/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: taskId,
+          }),
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+          throw new Error(result?.message || "Failed to Delete Task");
+        }
+
+        return result;
+      } catch (error) {
+        throw new Error("Failed to Delete Task.");
+      }
+    },
+    onSuccess: (result) => {
+      toast({
+        title: "Success",
+        description: result?.message || "Task Deleted",
+      });
+      return queryClient.invalidateQueries({
+        queryKey: ["tasks"],
+      });
+    },
+    onError: (result) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: result?.message || "Failed Task Deleted",
       });
     },
   });
@@ -166,6 +203,7 @@ export default function TaskColumn({ tasks, isLoading }: Props) {
                     </CardContent>
                     <CardFooter className="flex flex-wrap items-center justify-end gap-2 p-2 sm:p-3 lg:p-4">
                       <Button
+                        onClick={() => deleteMutate(task?.id)}
                         variant="destructive"
                         size="sm"
                         className="font-bold text-xs sm:text-sm"
